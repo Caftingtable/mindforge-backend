@@ -10,8 +10,14 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection
-const client = new MongoClient(process.env.MONGO_URI);
+// MongoDB connection with TLS options for Render
+const client = new MongoClient(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  ssl: true,
+  tlsAllowInvalidCertificates: true
+});
+
 async function run() {
   try {
     await client.connect();
@@ -25,7 +31,7 @@ async function run() {
 
     app.listen(port, () => console.log(`🚀 Server running on port ${port}`));
   } catch (err) {
-    console.error(err);
+    console.error('❌ MongoDB connection error:', err);
   }
 }
 run();
